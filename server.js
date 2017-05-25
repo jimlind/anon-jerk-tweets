@@ -96,8 +96,26 @@ app.get("/", function (request, response) {
 
 app.get("/refresh", function (request, response) {
   const jerkTweets = new JerkTweets(twitterClient, database, imaging, Imgur);
-  jerkTweets.timeline();
+  
   jerkTweets.stream();
+  
+  FileSystem.writeFile("./.data/timeline", '');
+  FileSystem.stat("./.data/timeline", (error, stats) => {
+    
+    // null === error
+    console.log(error);
+    console.log(stats.ctime);
+    /*
+    if (null === error) {
+      jerkTweets.timeline();
+      callBack(this.localFile);      
+    } else {
+      this.getRemote(callBack);
+    }
+    */
+  })
+  
+  
   response.send({'refreshed': true});
 })
 

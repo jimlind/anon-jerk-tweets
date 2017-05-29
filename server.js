@@ -6,6 +6,7 @@ var ImageMagick = require("imagemagick");
 var Sequelize = require('sequelize');
 var Twitter = require('twitter');
 var Imgur = require('imgur');
+var Moment = require('moment');
 
 // My libraries of stuff
 var Background = require("./lib/Background");
@@ -95,28 +96,23 @@ app.get("/", function (request, response) {
 });
 
 app.get("/refresh", function (request, response) {
-  const jerkTweets = new JerkTweets(twitterClient, database, imaging, Imgur);
+    const jerkTweets = new JerkTweets(twitterClient, database, imaging, Imgur);
+  const streamRefresh = jerkTweets.stream();
   
-  jerkTweets.stream();
-  
-  FileSystem.writeFile("./.data/timeline", '');
-  FileSystem.stat("./.data/timeline", (error, stats) => {
-    
-    // null === error
-    console.log(error);
-    console.log(stats.ctime);
-    /*
-    if (null === error) {
+  const lockFile = "./.data/timeline";
+  FileSystem.stat(lockFile, (error, stats) => {
+    // Calculates how many old the lock file is in ms
+    const lockFileAge = new Moment((stats || []).ctime || 0).diff([]);
+    if (lockFileAge < -1*25*60000) {
       jerkTweets.timeline();
-      callBack(this.localFile);      
-    } else {
-      this.getRemote(callBack);
+      //FileSystem.writeFile(lockFile, '');
     }
-    */
   })
   
-  
-  response.send({'refreshed': true});
+  response.send({
+    'refreshed_via_timeline': true,
+    'refreshed_via_stream': streamRefresh,
+  });
 })
 
 app.get("/image", function (request, response) {

@@ -14,9 +14,10 @@
     "sequelize": "^3.30.4",
     "imagemagick": "^0.1.3",
     "express": "^4.15.3",
-    "pug": "*",
+    "pug": "^0.1.0",
     "twitter": "^1.7.0",
-    "imgur": "^0.2.1"
+    "imgur": "^0.2.1",
+    "moment": "^2.18.1"
   },
   "engines": {
     "node": "6.10.x"
